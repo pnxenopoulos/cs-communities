@@ -237,12 +237,11 @@
         </div>
 
       </div>
-      <div class="col-8" id="chartDiv" style="height: 100%; border: 1px solid black;">
-        <div>
-          <div id="selectedNode" style="word-break: break-all">Selection: None</div>
+      <div class="col-8">
+        <div id="chartDiv" style="height: 100%; border: 1px solid black;">
         </div>
+        <div id="selectedNode" style="word-break: break-all">Selection: None</div>
       </div>
-
     </div>
   </div>
 
@@ -309,17 +308,18 @@
                 .attr("width", width)
                 .attr("height", height)
                 .attr("id", "networkSVG");
-    //
+    // DEBUG
     console.log(nodes_store);
     console.log(links_store);
-    //
+
+    // get community and year values
     community_list = $('#community_picker').val();
     year_list = $('#year_picker').val();
-    // filter the communities
+
+    // create filtered stores
     filtered_nodes_store = [];
     filtered_links_store = [];
-    // filter links by year
-    //filtered_links_store = links_store.filter(link => year_list.includes(link.year));
+
     // filter nodes
     filtered_nodes_store = nodes_store.filter(node => community_list.includes(node.community));
 
@@ -330,6 +330,10 @@
 
     filtered_links_store = links_store.filter(link => link.citations > 10 && year_list.includes(link.year) && (node_names.includes(link.source) && node_names.includes(link.target)));
 
+    for (x in year_list) {
+
+    }
+    
     console.log(filtered_links_store);
 
     var radius = 25;
