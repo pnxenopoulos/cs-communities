@@ -71,7 +71,7 @@
 
     <div class="row">
       <div class="col-4" id="optionDiv">
-        <select class="selectpicker" multiple data-actions-box="true" id="community_picker" title="Choose communities" onChange=changeCommunity(this.value)>
+        <select class="selectpicker" multiple data-actions-box="true" id="community_picker" title="Choose communities" onChange=changeCommunity()>
           <optgroup label="Machine Learning">
             <option value="ai" data-content="<img src='icons/ai.png' height='24px' width='24px'> Artificial Intelligence">Artificial Intelligence</option>
             <option value="computational linguistics" data-content="<img src='icons/linguistics.png' height='24px' width='24px'> Computational Linguistics">Computational Linguistics</option>
@@ -101,7 +101,7 @@
             <option value="medical informatics" data-content="<img src='icons/medical.png' height='24px' width='24px'> Medical Informatics">Medical Informatics</option>
           </optgroup>
         </select>
-        <select class="selectpicker" multiple data-actions-box="true" id="year_picker" title="Choose years" onChange=changeYears(this.value)>
+        <select class="selectpicker" multiple data-actions-box="true" id="year_picker" title="Choose years" onChange=changeYears()>
           <optgroup label="2010s">
             <option value="2017">2017</option>
             <option value="2016">2016</option>
@@ -238,6 +238,9 @@
 
       </div>
       <div class="col-8" id="chartDiv" style="height: 100%; border: 1px solid black;">
+        <div>
+          <div id="selectedNode" style="word-break: break-all">Selection: None</div>
+        </div>
       </div>
 
     </div>
@@ -325,14 +328,14 @@
       node_names[x] = filtered_nodes_store[x].name;
     }
 
-    filtered_links_store = links_store.filter(link => link.citations > 20 && year_list.includes(link.year) && (node_names.includes(link.source) && node_names.includes(link.target)));
+    filtered_links_store = links_store.filter(link => link.citations > 10 && year_list.includes(link.year) && (node_names.includes(link.source) && node_names.includes(link.target)));
 
     console.log(filtered_links_store);
 
-    var radius = 10;
+    var radius = 25;
           var simulation = d3.forceSimulation().nodes(filtered_nodes_store);
           var link_force = d3.forceLink(filtered_links_store).id(function(d) { return d.name; });
-          var charge_force = d3.forceManyBody().strength(-1000);
+          var charge_force = d3.forceManyBody().strength(-2000);
           var center_force = d3.forceCenter(width / 2, height / 2);
           simulation.force("charge_force", charge_force)
                     .force("center_force", center_force)
@@ -345,16 +348,22 @@
                       .selectAll("line")
                       .data(filtered_links_store)
                       .enter().append("line")
-                      .attr("stroke-width", 1)
+                      .attr("stroke-width", 2)
                       .style("stroke", "black")
-                      .style("opacity", edgeOpacity);
+                      .style("opacity", edgeOpacity)
+                      .on("mouseover", function(d) {
+                        document.getElementById('selectedNode').innerHTML = "<b>Source</b>: " + d.source.name.toString() + " (" + d.source.community + ")" + "<br />" + "<b>Target</b>: " + d.target.name.toString() + " (" + d.target.community + ")" + "<br />" + "<b>Citations</b>: " + d.citations.toString();
+                      });
           var node = g.append("g")
                       .attr("class", "nodes")
                       .selectAll("circle")
                       .data(filtered_nodes_store)
                       .enter().append("circle")
                       .attr("r", radius)
-                      .style("fill", nodeColour);
+                      .style("fill", nodeColour)
+                      .on("mouseover", function(d) {
+                        document.getElementById('selectedNode').innerHTML = "<b>Venue</b>: " + d.name.toString() + "<br />" + "<b>Community</b>: " + d.community.toString();
+                      });
 
           function nodeColour(d){
           	if(d.community == "ai"){
@@ -402,7 +411,7 @@
           //If the link type is "A" return green
           //If the link type is "E" return red
           function edgeOpacity(d){
-          	return d.citations/250;
+          	return d.citations/100;
           }
 
           var label = node.append("text")
@@ -448,7 +457,7 @@
 
           function tickActions() {
               //update circle positions each tick of the simulation
-                 node
+              node
                   .attr("cx", function(d) { return d.x; })
                   .attr("cy", function(d) { return d.y; });
 

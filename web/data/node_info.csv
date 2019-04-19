@@ -1,10 +1,9 @@
-name,community
+venue,community
 acm sigplan symposium on principles and practice of parallel programming,software systems
 acm transactions on algorithms,theory
 acm transactions on computer-human interaction,hci
 acm transactions on graphics,graphics
 acm transactions on intelligent systems and technology,data mining
-acm transactions on intelligent systems and technology,databases
 acm transactions on knowledge discovery from data,data mining
 "acm transactions on multimedia computing, communications, and applications",multimedia
 acm transactions on software engineering and methodology,software systems
@@ -51,7 +50,6 @@ conference on information sciences and systems,information theory
 conference on multimedia modeling,multimedia
 "conference on object-oriented programming systems, languages, and applications",software systems
 conference on recommender systems,data mining
-conference on recommender systems,databases
 cross-language evaluation forum,databases
 cryptographic hardware and embedded systems,security
 cryptography and communications,information theory
@@ -78,7 +76,6 @@ ieee communications surveys and tutorials,networks
 ieee computer graphics and applications,graphics
 ieee international conference on automatic face and gesture recognition,vision
 ieee international conference on fuzzy systems,data mining
-ieee international conference on fuzzy systems,databases
 "ieee international conference on high performance computing, data, and analytics",systems
 ieee internet of things journal,systems
 ieee journal of selected topics in signal processing,signal processing
@@ -94,20 +91,16 @@ ieee symposium on security and privacy,security
 ieee transactions on affective computing,hci
 "ieee transactions on audio, speech, and language processing",signal processing
 ieee transactions on circuits and systems for video technology,multimedia
-ieee transactions on circuits and systems for video technology,signal processing
 ieee transactions on cloud computing,systems
 ieee transactions on communications,networks
 ieee transactions on dependable and secure computing,security
 ieee transactions on fuzzy systems,ai
 ieee transactions on haptics,hci
-ieee transactions on haptics,robotics
 ieee transactions on human-machine systems,hci
 ieee transactions on image processing,signal processing
-ieee transactions on image processing,vision
 ieee transactions on information forensics and security,security
 ieee transactions on information theory,information theory
 ieee transactions on knowledge and data engineering,data mining
-ieee transactions on knowledge and data engineering,databases
 ieee transactions on mobile computing,networks
 ieee transactions on multimedia,multimedia
 ieee transactions on parallel and distributed systems,systems
@@ -120,7 +113,6 @@ ieee transactions on software engineering,software systems
 ieee transactions on vehicular technology,networks
 ieee transactions on visualization and computer graphics,graphics
 ieee transactions on wireless communications,networks
-ieee transactions on wireless communications,signal processing
 ieee wireless communications,networks
 ieee wireless communications letters,signal processing
 ieee-asme transactions on mechatronics,robotics
@@ -138,7 +130,6 @@ international acm sigir conference on research and development in information re
 "international colloquium on automata, languages and programming",theory
 "international conference on acoustics, speech, and signal processing",signal processing
 international conference on artificial intelligence and law,ai
-international conference on artificial intelligence and law,data mining
 international conference on communications,networks
 international conference on computational linguistics,computational linguistics
 international conference on computer communications,networks
@@ -149,10 +140,7 @@ international conference on data mining,data mining
 international conference on document analysis and recognition,vision
 international conference on functional programming,software systems
 international conference on human computer interaction,hci
-international conference on human computer interaction,robotics
 international conference on image processing,multimedia
-international conference on image processing,signal processing
-international conference on image processing,vision
 international conference on information systems,robotics
 international conference on intelligent robotics and applications,robotics
 international conference on machine learning,ai
@@ -188,13 +176,11 @@ international world wide web conferences,databases
 journal of automated reasoning,theory
 journal of biomedical informatics,medical informatics
 journal of biomedical semantics,bioinformatics
-journal of biomedical semantics,medical informatics
 journal of computational biology,bioinformatics
 journal of computer and system sciences,theory
 journal of cryptology,security
 journal of field robotics,robotics
 journal of intelligent and robotic systems,ai
-journal of intelligent and robotic systems,robotics
 journal of logic and computation,theory
 journal of machine learning research,ai
 journal of mathematical biology,bioinformatics
@@ -207,10 +193,7 @@ journal of the acm,theory
 journal of the american medical informatics association,medical informatics
 journal of theoretical biology,bioinformatics
 journal of visual communication and image representation,multimedia
-journal of visual communication and image representation,signal processing
-journal of visual communication and image representation,vision
 knowledge and information systems,data mining
-knowledge and information systems,databases
 knowledge based systems,ai
 language resources and evaluation,computational linguistics
 logical methods in computer science,theory
@@ -241,18 +224,15 @@ plos computational biology,bioinformatics
 problems of information transmission,information theory
 random structures and algorithms,theory
 robotics and autonomous systems,ai
-robotics and autonomous systems,robotics
 robotics and computer-integrated manufacturing,robotics
 robotics: science and systems,robotics
 science of computer programming,software systems
 security and communication networks,security
 siam international conference on data mining,data mining
-siam international conference on data mining,databases
 siam journal on computing,theory
 siam journal on imaging sciences,signal processing
 signal processing,signal processing
 signal processing-image communication,multimedia
-signal processing-image communication,signal processing
 software and systems modeling,software systems
 spoken language technology workshop,computational linguistics
 symposium on discrete algorithms,theory
