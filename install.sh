@@ -16,8 +16,8 @@ rm -rf dblp-ref
 cd ../..
 echo "---------- Create .gitignore ----------"
 touch .gitignore
-echo 'python/data/' > .gitignore
-echo 'python/graphs/' >> .gitignore
+echo 'prepare-data/data/' > .gitignore
+echo 'prepare-data/graphs/' >> .gitignore
 echo 'web/data/' >> .gitignore
 echo "---------- Writing data (can take a while) ----------"
 cd python
