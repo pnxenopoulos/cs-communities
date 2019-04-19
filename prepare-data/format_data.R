@@ -25,3 +25,8 @@ write_csv(graph_data, "graphs/graph_data/graph_data.csv")
 # Write node data
 paper_comm <- citations %>% select(paper_venue, paper_community)
 ref_comm <- citations %>% select(reference_venue, reference_community)
+names(paper_comm) <- c("name", "community")
+names(ref_comm) <- c("name", "community")
+comm_stacked <- rbind(paper_comm, ref_comm) %>%
+    distinct()
+write_csv(comm_stacked, "graphs/graph_data/node_info.csv")
