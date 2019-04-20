@@ -309,8 +309,8 @@
                 .attr("height", height)
                 .attr("id", "networkSVG");
     // DEBUG
-    console.log(nodes_store);
-    console.log(links_store);
+    //console.log(nodes_store);
+    //console.log(links_store);
 
     // get community and year values
     community_list = $('#community_picker').val();
@@ -331,10 +331,38 @@
     filtered_links_store = links_store.filter(link => link.citations > 10 && year_list.includes(link.year) && (node_names.includes(link.source) && node_names.includes(link.target)));
 
     for (x in year_list) {
-
+      console.log(filtered_links_store.filter(link => link.year == year_list[x]));
     }
 
-    console.log(filtered_links_store);
+    var result = filtered_links_store.map(function(link) {
+      return {
+          sourcetarget: link.source + '_' + link.target,
+          year: link.year,
+          citations: link.citations
+      };
+    });
+
+    console.log(result);
+
+    var result_grouped = [];
+    result.reduce(function(res, value) {
+      if (!res[value.sourcetarget]) {
+        res[value.sourcetarget] = { sourcetarget: value.sourcetarget, citations: 0};
+        result_grouped.push(res[value.sourcetarget]);
+      }
+      res[value.sourcetarget].citations += Number(value.citations);
+      return res;
+    }, {});
+    console.log(result_grouped);
+
+    var splitST = result_grouped.map(function(link) {
+      return {
+        source: link.sourcetarget.split("_")[0],
+        target: link.sourcetarget.split("_")[1],
+        citations: link.citations
+      }
+    });
+    console.log(splitST);
 
     var radius = 25;
           var simulation = d3.forceSimulation().nodes(filtered_nodes_store);
