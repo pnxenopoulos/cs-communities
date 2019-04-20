@@ -238,7 +238,7 @@
 
       </div>
       <div class="col-8">
-        <div id="chartDiv" style="height: 100%; border: 1px solid black;">
+        <div id="chartDiv" style="height: 80%; border: 1px solid black;">
         </div>
         <div id="selectedNode" style="word-break: break-all">Selection: None</div>
       </div>
@@ -249,7 +249,7 @@
   console.log("welcome to cs research communities!");
 
 var width = $("#chartDiv").width();
-var height = $(window).height() * 0.5;
+var height = $(window).height() * 0.8;
 
 var svg = d3.select("#chartDiv")
     .append("svg")
@@ -309,7 +309,7 @@ function requestData() {
 function plotData() {
     d3.select("#networkSVG").remove();
     var width = $("#chartDiv").width();
-    var height = $(window).height() * 0.5;
+    var height = $(window).height() * 0.8;
 
     var svg = d3.select("#chartDiv")
         .append("svg")
