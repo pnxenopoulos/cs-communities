@@ -51,15 +51,12 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="index.html">Network <span class="sr-only">(current)</span></a>
+    <ul class="nav nav-pills mb3" id="pills-tab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" href="#network" id="pills-network-tab" data-toggle="pill" role="tab" aria-controls="pills-network" aria-selected="true">Network</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="matrix.html">Matrix</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="about.html">About</a>
+        <a class="nav-link" href="#matrix" id="pills-matrix-tab" data-toggle="pill" role="tab" aria-controls="pills-matrix" aria-selected="false">Matrix</a>
       </li>
     </ul>
   </div>
@@ -237,10 +234,15 @@
         </div>
 
       </div>
-      <div class="col-8">
-        <div id="chartDiv" style="height: 80%; border: 1px solid black;">
+      <div class="tab-content col-8">
+        <div class="tab-pane active" id="network">
+          <div id="chartDiv" style="height: 80%; border: 1px solid black;">
+          </div>
+          <div id="selectedNode" style="word-break: break-all">Selection: None</div>
         </div>
-        <div id="selectedNode" style="word-break: break-all">Selection: None</div>
+        <div class="tab-pane" id="matrix">
+          <h1>test</h1>
+        </div>
       </div>
     </div>
   </div>
