@@ -260,6 +260,12 @@ var svg = d3.select("#chartDiv")
     .attr("height", height)
     .attr("id", "networkSVG");
 
+var mat_svg = d3.select("#chartDiv")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("id", "matrixSVG");
+
 community_store = [];
 year_store = [];
 
@@ -416,6 +422,9 @@ function plotData() {
     });
     console.log(splitCOM);
 
+    // create matrix
+
+    // create network graph
     var radius = 25;
     var simulation = d3.forceSimulation().nodes(filtered_nodes_store);
     var link_force = d3.forceLink(splitST).id(function(d) {
