@@ -241,7 +241,8 @@
           <div id="selectedNode" style="word-break: break-all">Selection: None</div>
         </div>
         <div class="tab-pane" id="matrix">
-          <h1>test</h1>
+          <div id="matrixDiv" style="height: 80%; border: 1px solid black;">
+          </div>
         </div>
       </div>
     </div>
@@ -278,8 +279,10 @@ function changeYears(val) {
 
 links_store = [];
 nodes_store = [];
+matrix_store = [];
 
 function requestData() {
+  // edges of graph
     d3.csv('data/graph_data.csv')
         .then((d) => {
             count = 0;
@@ -294,6 +297,7 @@ function requestData() {
             });
             console.log("columns are: " + d.columns);
         });
+  // nodes of graph
     d3.csv('data/node_info.csv')
         .then((d) => {
             count = 0;
@@ -306,9 +310,25 @@ function requestData() {
             });
             console.log("columns are: " + d.columns);
         });
+  // matrix data
+    d3.csv('data/matrix_data.csv')
+        .then((d) => {
+            count = 0;
+            d.forEach((row) => {
+                matrix_store[count] = {
+                    "paper_community": row.paper_community,
+                    "reference_community": row.reference_community,
+                    "year": row.year,
+                    "citations": row.citations
+                };
+                count++;
+            });
+            console.log("columns are: " + d.columns);
+        });
 }
 
 function plotData() {
+  // reset divs DEBUG add stuff for matrix
     d3.select("#networkSVG").remove();
     var width = $("#chartDiv").width();
     var height = $(window).height() * 0.8;
@@ -318,9 +338,6 @@ function plotData() {
         .attr("width", width)
         .attr("height", height)
         .attr("id", "networkSVG");
-    // DEBUG
-    //console.log(nodes_store);
-    //console.log(links_store);
 
     // get community and year values
     community_list = $('#community_picker').val();
@@ -329,9 +346,11 @@ function plotData() {
     // create filtered stores
     filtered_nodes_store = [];
     filtered_links_store = [];
+    filtered_matrix_store = [];
 
     // filter nodes
     filtered_nodes_store = nodes_store.filter(node => community_list.includes(node.community));
+    filtered_matrix_store = matrix_store.filter(row => community_list.includes(row.paper_community) && community_list.includes(row.reference_community) && year_list.includes(row.year));
 
     node_names = [];
     for (x in filtered_nodes_store) {
@@ -348,8 +367,6 @@ function plotData() {
         };
     });
 
-    console.log(result);
-
     var result_grouped = [];
     result.reduce(function(res, value) {
         if (!res[value.sourcetarget]) {
@@ -362,7 +379,6 @@ function plotData() {
         res[value.sourcetarget].citations += Number(value.citations);
         return res;
     }, {});
-    console.log(result_grouped);
 
     var splitST = result_grouped.map(function(link) {
         return {
@@ -371,7 +387,34 @@ function plotData() {
             citations: link.citations.toString()
         }
     });
-    console.log(splitST);
+
+    var result = filtered_matrix_store.map(function(row) {
+      return {
+          community_link: row.paper_community + '_' + row.reference_community,
+          year: row.year,
+          citations: row.citations
+      };
+    });
+    var result_grouped = [];
+    result.reduce(function(res, value) {
+        if (!res[value.community_link]) {
+            res[value.community_link] = {
+                sourcetarget: value.community_link,
+                citations: 0
+            };
+            result_grouped.push(res[value.community_link]);
+        }
+        res[value.community_link].citations += Number(value.citations);
+        return res;
+    }, {});
+    var splitCOM = result_grouped.map(function(row) {
+        return {
+            paper_comm: row.sourcetarget.split("_")[0],
+            reference_comm: row.sourcetarget.split("_")[1],
+            citations: row.citations.toString()
+        }
+    });
+    console.log(splitCOM);
 
     var radius = 25;
     var simulation = d3.forceSimulation().nodes(filtered_nodes_store);

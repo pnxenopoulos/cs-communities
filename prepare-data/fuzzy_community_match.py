@@ -23,7 +23,7 @@ data = data.apply(lambda x: x.astype(str).str.lower())
 
 venue, community = [], []
 for _, row in communities.iterrows():
-    closest_match = difflib.get_close_matches(row.venue, data.venue.unique(), 1, 0.8)
+    closest_match = difflib.get_close_matches(row.venue, data.venue.unique(), 1, 0.85)
     if closest_match == []:
         print('no match for ' + row.venue)
     else:
