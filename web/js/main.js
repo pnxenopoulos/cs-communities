@@ -18,8 +18,8 @@ function Matrix(options) {
 		throw new Error('It should be a 2-D array');
 	}
 
-  var maxValue = d3.max(data, function(layer) { return d3.max(layer, function(d) { return d; }); });
-  var minValue = d3.min(data, function(layer) { return d3.min(layer, function(d) { return d; }); });
+    var maxValue = d3.max(data, function(layer) { return d3.max(layer, function(d) { return d; }); });
+    var minValue = d3.min(data, function(layer) { return d3.min(layer, function(d) { return d; }); });
 
 	var numrows = data.length;
 	var numcols = data[0].length;
@@ -27,7 +27,7 @@ function Matrix(options) {
 	var svg = d3.select(container).append("svg")
 	    .attr("width", width + margin.left + margin.right)
 	    .attr("height", height + margin.top + margin.bottom)
-			.append("g")
+		.append("g")
 	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	var background = svg.append("rect")
