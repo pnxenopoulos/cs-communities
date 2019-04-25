@@ -547,7 +547,64 @@
   }
 
   function plotMatrix() {
-    console.log("test");
+    d3.select("#matrixSVG").remove();
+    var width = $("#matrixDiv").width();
+    var height = $(window).height() * 0.8;
+
+    var svg = d3.select("#matrixDiv")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("id", "matrixSVG");
+
+    filtered_matrix_store = [];
+    filtered_matrix_store = matrix_store.filter(row => community_list.includes(row.paper_community) && community_list.includes(row.reference_community) && year_list.includes(row.year));
+    var result = filtered_matrix_store.map(function(row) {
+      return {
+          community_link: row.paper_community + '_' + row.reference_community,
+          year: row.year,
+          citations: row.citations
+      };
+    });
+    var result_grouped = [];
+    result.reduce(function(res, value) {
+        if (!res[value.community_link]) {
+            res[value.community_link] = {
+                sourcetarget: value.community_link,
+                citations: 0
+            };
+            result_grouped.push(res[value.community_link]);
+        }
+        res[value.community_link].citations += Number(value.citations);
+        return res;
+    }, {});
+
+    var splitCOM = result_grouped.map(function(row) {
+        return {
+            paper_comm: row.sourcetarget.split("_")[0],
+            reference_comm: row.sourcetarget.split("_")[1],
+            citations: row.citations.toString()
+        }
+    });
+
+    console.log(splitCOM);
+
+    let unique_communities = [...new Set(splitCOM.map(item => item.paper_comm))];
+    matrix_data = [];
+    
+    for(var i = 0; i < unique_communities.length; i++) {
+      matrix_row = [];
+      current_comm = unique_communities[i];
+      current_data = splitCOM.filter(item => item.paper_comm == current_comm);
+      for(var j = 0; j < unique_communities.length; j++) {
+        current_data_subset = current_data.filter(item => item.reference_comm == unique_communities[j])
+        matrix_row.push(Number(current_data_subset[0].citations))
+      }
+      matrix_data[i] = matrix_row;
+    }
+
+    matrix_labels = community_list;
+    console.log(matrix_data);
   }
 
   function plotData() {
