@@ -247,341 +247,315 @@
       </div>
     </div>
   </div>
-
   <script>
   console.log("welcome to cs research communities!");
 
-var width = $("#chartDiv").width();
-var height = $(window).height() * 0.8;
+  var width = $("#chartDiv").width();
+  var height = $(window).height() * 0.8;
 
-var svg = d3.select("#chartDiv")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("id", "networkSVG");
+  var svg = d3.select("#chartDiv")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("id", "networkSVG");
 
-var mat_svg = d3.select("#chartDiv")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("id", "matrixSVG");
+  var mat_svg = d3.select("#matrixDiv")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("id", "matrixSVG");
 
-community_store = [];
-year_store = [];
+  community_store = [];
+  year_store = [];
 
-function changeCommunity(val) {
-    // Prints the value of selected items in community picker select
-    s = $('#community_picker').val();
-    document.getElementById('selectedCommunities').innerHTML = s.toString();
-    community_store = s;
-}
+  function changeCommunity(val) {
+      // Prints the value of selected items in community picker select
+      s = $('#community_picker').val();
+      document.getElementById('selectedCommunities').innerHTML = s.toString();
+      community_store = s;
+  }
 
-function changeYears(val) {
-    // Prints the value of selected items in year picker select
-    s = $('#year_picker').val();
-    document.getElementById('selectedYears').innerHTML = s.toString();
-    year_store = s;
-}
+  function changeYears(val) {
+      // Prints the value of selected items in year picker select
+      s = $('#year_picker').val();
+      document.getElementById('selectedYears').innerHTML = s.toString();
+      year_store = s;
+  }
 
-links_store = [];
-nodes_store = [];
-matrix_store = [];
+  links_store = [];
+  nodes_store = [];
+  matrix_store = [];
 
-function requestData() {
-  // edges of graph
-    d3.csv('data/graph_data.csv')
-        .then((d) => {
-            count = 0;
-            d.forEach((row) => {
-                links_store[count] = {
-                    "source": row.source,
-                    "target": row.target,
-                    "year": row.year,
-                    "citations": row.citations
-                };
-                count++;
-            });
-            console.log("columns are: " + d.columns);
-        });
-  // nodes of graph
-    d3.csv('data/node_info.csv')
-        .then((d) => {
-            count = 0;
-            d.forEach((row) => {
-                nodes_store[count] = {
-                    "name": row.venue,
-                    "community": row.community
-                };
-                count++;
-            });
-            console.log("columns are: " + d.columns);
-        });
-  // matrix data
-    d3.csv('data/matrix_data.csv')
-        .then((d) => {
-            count = 0;
-            d.forEach((row) => {
-                matrix_store[count] = {
-                    "paper_community": row.paper_community,
-                    "reference_community": row.reference_community,
-                    "year": row.year,
-                    "citations": row.citations
-                };
-                count++;
-            });
-            console.log("columns are: " + d.columns);
-        });
-}
+  function requestData() {
+    // edges of graph
+      d3.csv('data/graph_data.csv')
+          .then((d) => {
+              count = 0;
+              d.forEach((row) => {
+                  links_store[count] = {
+                      "source": row.source,
+                      "target": row.target,
+                      "year": row.year,
+                      "citations": row.citations
+                  };
+                  count++;
+              });
+              console.log("columns are: " + d.columns);
+          });
+    // nodes of graph
+      d3.csv('data/node_info.csv')
+          .then((d) => {
+              count = 0;
+              d.forEach((row) => {
+                  nodes_store[count] = {
+                      "name": row.venue,
+                      "community": row.community
+                  };
+                  count++;
+              });
+              console.log("columns are: " + d.columns);
+          });
+    // matrix data
+      d3.csv('data/matrix_data.csv')
+          .then((d) => {
+              count = 0;
+              d.forEach((row) => {
+                  matrix_store[count] = {
+                      "paper_community": row.paper_community,
+                      "reference_community": row.reference_community,
+                      "year": row.year,
+                      "citations": row.citations
+                  };
+                  count++;
+              });
+              console.log("columns are: " + d.columns);
+          });
+  }
 
-function plotData() {
-  // reset divs DEBUG add stuff for matrix
-    d3.select("#networkSVG").remove();
-    var width = $("#chartDiv").width();
-    var height = $(window).height() * 0.8;
+  function plotNetwork() {
+      d3.select("#networkSVG").remove();
+      var width = $("#chartDiv").width();
+      var height = $(window).height() * 0.8;
 
-    var svg = d3.select("#chartDiv")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("id", "networkSVG");
+      var svg = d3.select("#chartDiv")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", height)
+          .attr("id", "networkSVG");
 
-    // get community and year values
-    community_list = $('#community_picker').val();
-    year_list = $('#year_picker').val();
+      // get community and year values
+      community_list = $('#community_picker').val();
+      year_list = $('#year_picker').val();
 
-    // create filtered stores
-    filtered_nodes_store = [];
-    filtered_links_store = [];
-    filtered_matrix_store = [];
+      // create filtered stores
+      filtered_nodes_store = [];
+      filtered_links_store = [];
 
-    // filter nodes
-    filtered_nodes_store = nodes_store.filter(node => community_list.includes(node.community));
-    filtered_matrix_store = matrix_store.filter(row => community_list.includes(row.paper_community) && community_list.includes(row.reference_community) && year_list.includes(row.year));
+      // filter nodes
+      filtered_nodes_store = nodes_store.filter(node => community_list.includes(node.community));
 
-    node_names = [];
-    for (x in filtered_nodes_store) {
-        node_names[x] = filtered_nodes_store[x].name;
-    }
+      node_names = [];
+      for (x in filtered_nodes_store) {
+          node_names[x] = filtered_nodes_store[x].name;
+      }
 
-    filtered_links_store = links_store.filter(link => link.citations > 10 && year_list.includes(link.year) && (node_names.includes(link.source) && node_names.includes(link.target)));
+      filtered_links_store = links_store.filter(link => link.citations > 10 && year_list.includes(link.year) && (node_names.includes(link.source) && node_names.includes(link.target)));
 
-    var result = filtered_links_store.map(function(link) {
-        return {
-            sourcetarget: link.source + '_' + link.target,
-            year: link.year,
-            citations: link.citations
-        };
-    });
+      var result = filtered_links_store.map(function(link) {
+          return {
+              sourcetarget: link.source + '_' + link.target,
+              year: link.year,
+              citations: link.citations
+          };
+      });
 
-    var result_grouped = [];
-    result.reduce(function(res, value) {
-        if (!res[value.sourcetarget]) {
-            res[value.sourcetarget] = {
-                sourcetarget: value.sourcetarget,
-                citations: 0
-            };
-            result_grouped.push(res[value.sourcetarget]);
-        }
-        res[value.sourcetarget].citations += Number(value.citations);
-        return res;
-    }, {});
+      var result_grouped = [];
+      result.reduce(function(res, value) {
+          if (!res[value.sourcetarget]) {
+              res[value.sourcetarget] = {
+                  sourcetarget: value.sourcetarget,
+                  citations: 0
+              };
+              result_grouped.push(res[value.sourcetarget]);
+          }
+          res[value.sourcetarget].citations += Number(value.citations);
+          return res;
+      }, {});
 
-    var splitST = result_grouped.map(function(link) {
-        return {
-            source: link.sourcetarget.split("_")[0],
-            target: link.sourcetarget.split("_")[1],
-            citations: link.citations.toString()
-        }
-    });
+      var splitST = result_grouped.map(function(link) {
+          return {
+              source: link.sourcetarget.split("_")[0],
+              target: link.sourcetarget.split("_")[1],
+              citations: link.citations.toString()
+          }
+      });
 
-    var result = filtered_matrix_store.map(function(row) {
-      return {
-          community_link: row.paper_community + '_' + row.reference_community,
-          year: row.year,
-          citations: row.citations
-      };
-    });
-    var result_grouped = [];
-    result.reduce(function(res, value) {
-        if (!res[value.community_link]) {
-            res[value.community_link] = {
-                sourcetarget: value.community_link,
-                citations: 0
-            };
-            result_grouped.push(res[value.community_link]);
-        }
-        res[value.community_link].citations += Number(value.citations);
-        return res;
-    }, {});
-    var splitCOM = result_grouped.map(function(row) {
-        return {
-            paper_comm: row.sourcetarget.split("_")[0],
-            reference_comm: row.sourcetarget.split("_")[1],
-            citations: row.citations.toString()
-        }
-    });
-    console.log(splitCOM);
+      // create network graph
+      var radius = 25;
+      var simulation = d3.forceSimulation().nodes(filtered_nodes_store);
+      var link_force = d3.forceLink(splitST).id(function(d) {
+          return d.name;
+      });
+      var charge_force = d3.forceManyBody().strength(-2000);
+      var center_force = d3.forceCenter(width / 2, height / 2);
+      simulation.force("charge_force", charge_force)
+          .force("center_force", center_force)
+          .force("links", link_force);
+      simulation.on("tick", tickActions);
+      var g = svg.append("g")
+          .attr("class", "everything");
+      var link = g.append("g")
+          .attr("class", "links")
+          .selectAll("line")
+          .data(splitST)
+          .enter().append("line")
+          .attr("stroke-width", 2)
+          .style("stroke", "black")
+          .style("opacity", edgeOpacity)
+          .on("mouseover", function(d) {
+              document.getElementById('selectedNode').innerHTML = "<b>Source</b>: " + d.source.name.toString() + " (" + d.source.community + ")" + "<br />" + "<b>Target</b>: " + d.target.name.toString() + " (" + d.target.community + ")" + "<br />" + "<b>Citations</b>: " + d.citations.toString();
+          });
+      var node = g.append("g")
+          .attr("class", "nodes")
+          .selectAll("circle")
+          .data(filtered_nodes_store)
+          .enter().append("circle")
+          .attr("r", radius)
+          .style("fill", nodeColour)
+          .on("mouseover", function(d) {
+              document.getElementById('selectedNode').innerHTML = "<b>Venue</b>: " + d.name.toString() + "<br />" + "<b>Community</b>: " + d.community.toString();
+          });
 
-    // create matrix
+      function nodeColour(d) {
+          if (d.community == "ai") {
+              return "#8b0000";
+          } else if (d.community == "computational linguistics") {
+              return "#bf554b";
+          } else if (d.community == "computer vision") {
+              return "#e69b94";
+          } else if (d.community == "data mining") {
+              return "#ffe4e1";
+          } else if (d.community == "databases") {
+              return "#00008b";
+          } else if (d.community == "systems") {
+              return "#354ebf";
+          } else if (d.community == "software systems") {
+              return "#6892e3";
+          } else if (d.community == "networks") {
+              return "#add8e6";
+          } else if (d.community == "security") {
+              return "#006400";
+          } else if (d.community == "signal processing") {
+              return "#309129";
+          } else if (d.community == "information theory") {
+              return "#60be5a";
+          } else if (d.community == "theory") {
+              return "#90ee90";
+          } else if (d.community == "hci") {
+              return "#8b008b";
+          } else if (d.community == "multimedia") {
+              return "#b14fa0";
+          } else if (d.community == "graphics") {
+              return "#d783b3";
+          } else if (d.community == "robotics") {
+              return "#ffb6c1";
+          } else if (d.community == "medical informatics") {
+              return "#b8860b";
+          } else if (d.community == "bioinformatics") {
+              return "#ffd700";
+          } else {
+              return "black";
+          }
+      }
 
-    // create network graph
-    var radius = 25;
-    var simulation = d3.forceSimulation().nodes(filtered_nodes_store);
-    var link_force = d3.forceLink(splitST).id(function(d) {
-        return d.name;
-    });
-    var charge_force = d3.forceManyBody().strength(-2000);
-    var center_force = d3.forceCenter(width / 2, height / 2);
-    simulation.force("charge_force", charge_force)
-        .force("center_force", center_force)
-        .force("links", link_force);
-    simulation.on("tick", tickActions);
-    var g = svg.append("g")
-        .attr("class", "everything");
-    var link = g.append("g")
-        .attr("class", "links")
-        .selectAll("line")
-        .data(splitST)
-        .enter().append("line")
-        .attr("stroke-width", 2)
-        .style("stroke", "black")
-        .style("opacity", edgeOpacity)
-        .on("mouseover", function(d) {
-            document.getElementById('selectedNode').innerHTML = "<b>Source</b>: " + d.source.name.toString() + " (" + d.source.community + ")" + "<br />" + "<b>Target</b>: " + d.target.name.toString() + " (" + d.target.community + ")" + "<br />" + "<b>Citations</b>: " + d.citations.toString();
-        });
-    var node = g.append("g")
-        .attr("class", "nodes")
-        .selectAll("circle")
-        .data(filtered_nodes_store)
-        .enter().append("circle")
-        .attr("r", radius)
-        .style("fill", nodeColour)
-        .on("mouseover", function(d) {
-            document.getElementById('selectedNode').innerHTML = "<b>Venue</b>: " + d.name.toString() + "<br />" + "<b>Community</b>: " + d.community.toString();
-        });
+      //Function to choose the line colour and thickness
+      //If the link type is "A" return green
+      //If the link type is "E" return red
+      function edgeOpacity(d) {
+          return d.citations / 100;
+      }
 
-    function nodeColour(d) {
-        if (d.community == "ai") {
-            return "#8b0000";
-        } else if (d.community == "computational linguistics") {
-            return "#bf554b";
-        } else if (d.community == "computer vision") {
-            return "#e69b94";
-        } else if (d.community == "data mining") {
-            return "#ffe4e1";
-        } else if (d.community == "databases") {
-            return "#00008b";
-        } else if (d.community == "systems") {
-            return "#354ebf";
-        } else if (d.community == "software systems") {
-            return "#6892e3";
-        } else if (d.community == "networks") {
-            return "#add8e6";
-        } else if (d.community == "security") {
-            return "#006400";
-        } else if (d.community == "signal processing") {
-            return "#309129";
-        } else if (d.community == "information theory") {
-            return "#60be5a";
-        } else if (d.community == "theory") {
-            return "#90ee90";
-        } else if (d.community == "hci") {
-            return "#8b008b";
-        } else if (d.community == "multimedia") {
-            return "#b14fa0";
-        } else if (d.community == "graphics") {
-            return "#d783b3";
-        } else if (d.community == "robotics") {
-            return "#ffb6c1";
-        } else if (d.community == "medical informatics") {
-            return "#b8860b";
-        } else if (d.community == "bioinformatics") {
-            return "#ffd700";
-        } else {
-            return "black";
-        }
-    }
+      var label = node.append("text")
+          .attr("dy", ".35em")
+          .text(function(d) {
+              return d.name;
+          });
+      //add drag capabilities
+      var drag_handler = d3.drag()
+          .on("start", drag_start)
+          .on("drag", drag_drag)
+          .on("end", drag_end);
 
-    //Function to choose the line colour and thickness
-    //If the link type is "A" return green
-    //If the link type is "E" return red
-    function edgeOpacity(d) {
-        return d.citations / 100;
-    }
-
-    var label = node.append("text")
-        .attr("dy", ".35em")
-        .text(function(d) {
-            return d.name;
-        });
-    //add drag capabilities
-    var drag_handler = d3.drag()
-        .on("start", drag_start)
-        .on("drag", drag_drag)
-        .on("end", drag_end);
-
-    drag_handler(node);
+      drag_handler(node);
 
 
-    //add zoom capabilities
-    var zoom_handler = d3.zoom()
-        .on("zoom", zoom_actions);
+      //add zoom capabilities
+      var zoom_handler = d3.zoom()
+          .on("zoom", zoom_actions);
 
-    zoom_handler(svg);
+      zoom_handler(svg);
 
-    function drag_start(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-    }
+      function drag_start(d) {
+          if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+      }
 
-    //make sure you can't drag the circle outside the box
-    function drag_drag(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-    }
+      //make sure you can't drag the circle outside the box
+      function drag_drag(d) {
+          d.fx = d3.event.x;
+          d.fy = d3.event.y;
+      }
 
-    function drag_end(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-    }
+      function drag_end(d) {
+          if (!d3.event.active) simulation.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+      }
 
-    //Zoom functions
-    function zoom_actions() {
-        g.attr("transform", d3.event.transform)
-    }
+      //Zoom functions
+      function zoom_actions() {
+          g.attr("transform", d3.event.transform)
+      }
 
-    function tickActions() {
-        //update circle positions each tick of the simulation
-        node
-            .attr("cx", function(d) {
-                return d.x;
-            })
-            .attr("cy", function(d) {
-                return d.y;
-            });
+      function tickActions() {
+          //update circle positions each tick of the simulation
+          node
+              .attr("cx", function(d) {
+                  return d.x;
+              })
+              .attr("cy", function(d) {
+                  return d.y;
+              });
 
-        //update link positions
-        link
-            .attr("x1", function(d) {
-                return d.source.x;
-            })
-            .attr("y1", function(d) {
-                return d.source.y;
-            })
-            .attr("x2", function(d) {
-                return d.target.x;
-            })
-            .attr("y2", function(d) {
-                return d.target.y;
-            });
-    }
+          //update link positions
+          link
+              .attr("x1", function(d) {
+                  return d.source.x;
+              })
+              .attr("y1", function(d) {
+                  return d.source.y;
+              })
+              .attr("x2", function(d) {
+                  return d.target.x;
+              })
+              .attr("y2", function(d) {
+                  return d.target.y;
+              });
+      }
 
-}
+  }
 
-requestData();
-//plotData(nodes_store, links_store, year_store, community_store);
+  function plotMatrix() {
+    console.log("test");
+  }
+
+  function plotData() {
+    plotNetwork();
+    plotMatrix();
+  }
+
+  requestData();
   </script>
 </body>
 
