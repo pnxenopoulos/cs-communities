@@ -364,7 +364,7 @@
           node_names[x] = filtered_nodes_store[x].name;
       }
 
-      filtered_links_store = links_store.filter(link => link.citations > 10 && year_list.includes(link.year) && (node_names.includes(link.source) && node_names.includes(link.target)));
+      filtered_links_store = links_store.filter(link => link.citations > 20 && year_list.includes(link.year) && (node_names.includes(link.source) && node_names.includes(link.target)));
 
       var result = filtered_links_store.map(function(link) {
           return {
@@ -615,7 +615,7 @@
       .paddingInner(padding)
       .domain(d3.range(1, rows + 1));
 
-    var c = chroma.scale(["powderblue", "royalblue"])
+    var c = chroma.scale(["white", "grey"])
       .domain([0, 10000]);
 
     var x_axis = d3.axisTop(y).tickFormat(function(d, i){ return community_list[i]; });
