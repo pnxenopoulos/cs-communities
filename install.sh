@@ -19,6 +19,7 @@ touch .gitignore
 echo 'prepare-data/data/' > .gitignore
 echo 'prepare-data/graphs/' >> .gitignore
 echo 'web/data/' >> .gitignore
+echo '.DS_Store' >> .gitignore
 echo "---------- Writing data (can take a while) ----------"
 cd prepare-data
 Rscript scrape_communities.R
