@@ -1,11 +1,11 @@
 library(tidyverse)
 
 # Write matrix data
-citations <- read_csv("graphs/graph_data/citations.csv")
+citations <- read_csv("graphs/citations.csv")
 matrix_data <- citations %>%
     group_by(paper_community, reference_community, year) %>%
     summarise(citations = sum(citations))
-write_csv(matrix_data, "graphs/graph_data/matrix_data.csv")
+write_csv(matrix_data, "graphs/matrix_data.csv")
 
 # Write graph data
 graph_data <- citations %>%

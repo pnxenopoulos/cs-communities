@@ -1,5 +1,5 @@
 echo "---------- Making necessary directories ----------"
-cd python
+cd prepare-data
 mkdir data
 cd graphs
 mkdir graph_data
@@ -20,9 +20,8 @@ echo 'prepare-data/data/' > .gitignore
 echo 'prepare-data/graphs/' >> .gitignore
 echo 'web/data/' >> .gitignore
 echo "---------- Writing data (can take a while) ----------"
-cd python
+cd prepare-data
 Rscript scrape_communities.R
 python fuzzy_community_match.py
 python process_data.py
-python build_graph.py
 Rscript format_data.R
