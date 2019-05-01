@@ -31,27 +31,25 @@
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
   <style>
+  .container-fluid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+  }
+  .option-menu {
+    grid-column: span 4;
+  }
+  .tab-content {
+    grid-column: span 8;
+  }
   .links line {
     stroke: #999;
     stroke-opacity: 0.6;
   }
-
   .nodes circle {
     stroke: black	;
     stroke-width: 0px;
   }
-
-  div.tooltip {
-    position: absolute;
-    text-align: center;
-    padding: 8px;
-    font: 12px sans-serif;
-    background: white;
-    border: solid 1px #aaa;
-    border-radius: 8px;
-    pointer-events: none;
-  }
-</style>
+  </style>
 </head>
 
 <body>
@@ -76,14 +74,8 @@
   <br>
 
   <div class="container-fluid">
-
-    <div class="row">
-      <div class="col-4" id="optionDiv">
-        <select class="col-3 selectpicker" data-actions-box="true" id="data_picker" title="Choose data granularity" onChange=changeDataType()>
-          <option value="community_level">Community</option>
-          <option value="venue_level">Venue</option>
-        </select>
-        <select class="col-3 selectpicker" multiple data-actions-box="true" id="community_picker" title="Choose communities" onChange=changeCommunity()>
+      <div class="option-menu" id="optionDiv">
+        <select class="selectpicker" multiple data-actions-box="true" id="community_picker" title="Choose communities" onChange=changeCommunity()>
           <optgroup label="Machine Learning">
             <option value="ai" data-content="<img src='icons/ai.png' height='24px' width='24px'> Artificial Intelligence">Artificial Intelligence</option>
             <option value="computational linguistics" data-content="<img src='icons/linguistics.png' height='24px' width='24px'> Computational Linguistics">Computational Linguistics</option>
@@ -151,6 +143,10 @@
         </select>
         <input type="number" class="col-4 form-control" id="citations_minimum" aria-describedby="min_citations" placeholder="Minimum number of citations">
         <button type="button" class="btn btn-outline-primary" onclick=plotData()>Submit</button>
+        <select class="selectpicker" data-actions-box="true" id="matrix_picker" title="Matrix Selection: ">
+          <option value="community">by community</option>
+          <option value="venure">by venure</option>
+        </select>
 
         <br>
         <br>
@@ -250,21 +246,26 @@
         </div>
 
       </div>
-      <div class="tab-content col-8">
+      <div class="tab-content">
         <div class="tab-pane active" id="network">
-          <div id="chartDiv" style="height: 80%; border: 1px solid black;">
-          </div>
+          <div id="chartDiv" style="height: 80%; border: 1px solid black;"></div>
           <div id="selectedNode" style="word-break: break-all">Selection: None</div>
         </div>
         <div class="tab-pane" id="matrix">
-          <div id="matrixDiv" style="height: 80%; border: 1px solid black;">
-          </div>
+          <div id="matrixDiv" style="height: 80%; border: 1px solid black;"></div>
           <div style="display:inline-block;" id="legend"></div>
           <div style="display:inline-block; float:left" id="matrix_container"></div>
-          <div id="selectedRect" style="word-break: break-all">Citations: None</div>
+          <div id="matrixCust" style="display:inline-block; float:left" class="col-2">
+            <div class="panel"></div>
+            <select class="selectpicker" data-width=100% data-actions-box="true" id="order_picker" title="Order: ">
+                <option value="name">by Name</option>
+                <option value="count">by Frequency</option>
+                <option value="group">by Group</option>
+            </select>
+            <div id="selectedRect" style="word-break: break-all">Citations: None</div>
+          </div>
         </div>
       </div>
-    </div>
   </div>
 
   <script src="https://unpkg.com/data2grid@1.0.0/build/data2grid.min.js"></script>
@@ -339,13 +340,14 @@
                 count = 0;
                 d.forEach((row) => {
                     nodes_store[count] = {
-                        "name": row.venue,
+                        "name": row.name,
                         "community": row.community
                     };
                     count++;
                 });
                 console.log("columns are: " + d.columns);
             });
+      //console.log(nodes_store);
       // matrix data
         d3.csv('data/matrix_data.csv')
             .then((d) => {
@@ -380,7 +382,9 @@
 
       // get community and year values
       community_list = $('#community_picker').val();
-      year_list = $('#year_picker').val();
+      year_list = $('#year_picker').val().sort();
+
+      console.log(year_list)
 
       // create filtered stores
       filtered_nodes_store = [];
@@ -450,7 +454,7 @@
           .selectAll("line")
           .data(splitST)
           .enter().append("line")
-          .attr("stroke-width", 3)
+          .attr("stroke-width", 2)
           .style("stroke", "black")
           .style("opacity", edgeOpacity)
           .on("mouseover", mouseover_link)
@@ -470,20 +474,12 @@
 
 
       function mouseover_node(d) {
-        div.transition()
-           .duration(300)
-           .style("opacity", 1);
+         div.transition()
+            .duration(300)
+            .style("opacity", 1);
 
-        //d3.selectAll("circle").style("opacity", .20);
-        //d3.selectAll(".links").style("stroke", "gray").style("opacity", .05);
-
-        node.style("opacity", function(l) {
-            if (d.name == l.name) {
-              return 1;
-            } else {
-              return 0.20;
-            }
-        });
+        d3.selectAll("circle").style("opacity", .20);
+        d3.selectAll(".links").style("stroke", "gray").style("opacity", .05);
 
         link.style("opacity", function(l) {
           if (d.name == l.source.name || d.name == l.target.name) {
@@ -515,8 +511,6 @@
           link.data(splitST)
               .style("stroke", "black")
               .style("opacity", edgeOpacity);
-
-          d3.selectAll("circle").style("opacity", 1);
       }
 
       function mouseover_link() {
@@ -581,7 +575,7 @@
       }
 
       function edgeOpacity(d) {
-          return d.citations / maxval * 2;
+          return d.citations / maxval * 10;
       }
 
       var label = node.append("text")
@@ -652,53 +646,61 @@
                   return d.target.y;
               });
       }
-
   }
 
-  function plotMatrix() {
+  // --------------------------------------------- 
+  // Start to process matrix plot
+  function matAxisColour(d) {
+    if (d.community == "ai")
+      return "#8b0000";
+    if (d.community == "computational linguistics")
+      return "#bf554b";
+    if (d.community == "computer vision")
+      return "#e69b94";
+    if (d.community == "data mining")
+      return "#ffe4e1";
+    if (d.community == "databases")
+      return "#00008b";
+    if (d.community == "systems")
+      return "#354ebf";
+    if (d.community == "software systems")
+      return "#6892e3";
+    if (d.community == "networks")
+      return "#add8e6";
+    if (d.community == "security")
+      return "#006400";
+    if (d.community == "signal processing")
+      return "#309129";
+    if (d.community == "information theory")
+      return "#60be5a";
+    if (d.community == "theory")
+      return "#90ee90";
+    if (d.community == "hci")
+      return "#8b008b";
+    if (d.community == "multimedia")
+      return "#b14fa0";
+    if (d.community == "graphics")
+      return "#d783b3";
+    if (d.community == "robotics")
+      return "#ffb6c1";
+    if (d.community == "medical informatics")
+      return "#b8860b";
+    if (d.community == "bioinformatics")
+      return "#ffd700";
+    return "black";
+  }
+
+  function plotMatrix(node_list, link_list, index_to_group, is_community_matrix) {
     d3.select("#matrixSVG").remove();
 
-    filtered_matrix_store = [];
-    filtered_matrix_store = matrix_store.filter(row => community_list.includes(row.paper_community) && community_list.includes(row.reference_community) && year_list.includes(row.year));
-
-    var result = filtered_matrix_store.map(function(row) {
-      return {
-          community_link: row.paper_community + '_' + row.reference_community,
-          year: row.year,
-          citations: row.citations
-      };
-    });
-
-    var result_grouped = [];
-    result.reduce(function(res, value) {
-        if (!res[value.community_link]) {
-            res[value.community_link] = {
-                sourcetarget: value.community_link,
-                citations: 0
-            };
-            result_grouped.push(res[value.community_link]);
-        }
-        res[value.community_link].citations += Number(value.citations);
-        return res;
-    }, {});
-
-    var splitCOM = result_grouped.map(function(row) {
-        return {
-            paper_comm: row.sourcetarget.split("_")[0],
-            reference_comm: row.sourcetarget.split("_")[1],
-            citations: row.citations.toString()
-        }
-    });
-
-    console.log(splitCOM);
-
-    var grid = data2grid.grid(splitCOM);
-    var rows = d3.max(grid, function(d){ return d.row; });
-
-    var margin = {top: 100, bottom: 100, left: 100, right: 100};
-    var width = 500;
-    var height = 500;
-    var padding = .1;
+    var margin = {
+      top: 150,
+      bottom: 50,
+      left: 150,
+      right: 50
+    };
+    var width = height = 500;
+    var padding = .02;
 
     var mat_svg = d3.select("#matrix_container").append("svg")
       .attr("id", "matrixSVG")
@@ -707,56 +709,369 @@
       .append("g")
       .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-    var x = d3.scaleBand()
-      .range([0, width])
-      .paddingInner(padding)
-      .domain(d3.range(1, rows + 1));
+    var matrix = [];
+    var total_items = node_list.length;
 
-    var y = d3.scaleBand()
-      .range([0, height])
-      .paddingInner(padding)
-      .domain(d3.range(1, rows + 1));
+    var matrixScale = d3.scaleBand().range([0, width]).domain(d3.range(total_items));
+    var opacityScale = d3.scaleLinear().domain([0, 10]).range([0.3, 1.0]).clamp(true);
+    if (is_community_matrix) {
+      var colorScale = chroma.scale(["white", "gray"]).domain([0, 10000]);
+    } else {
+      // var colorScale = d3.scaleOrdinal(d3.schemeCategory20);
+      var colorScale = d3.scaleOrdinal(d3.schemeAccent);
+    }
 
-    var c = chroma.scale(["white", "grey"])
-      .domain([0, 10000]);
-
-    var x_axis = d3.axisTop(y).tickFormat(function(d, i){ return community_list[i]; });
-    var y_axis = d3.axisLeft(x).tickFormat(function(d, i){ return community_list[i]; });
-
-    mat_svg.append("g")
-      .attr("class", "x axis")
-      .call(x_axis);
-
-    mat_svg.append("g")
-      .attr("class", "y axis")
-      .call(y_axis);
-
-    mat_svg.selectAll("rect")
-        .data(grid, function(d){ return d.paper_comm + d.reference_comm; })
-        .enter().append("rect")
-        .attr("x", function(d){ return x(d.column); })
-        .attr("y", function(d){ return y(d.row); })
-        .attr("width", x.bandwidth())
-        .attr("height", y.bandwidth())
-        .style("fill", function(d){ return c(d.citations); })
-        .style("opacity", 1e-6)
-        .transition()
-        .style("opacity", 1);
-
-  mat_svg.selectAll("rect")
-
-  d3.selectAll("rect")
-    .on("mouseover", function(d){
-      document.getElementById('selectedRect').innerHTML =  "<b>Source Community</b>: " + d.paper_comm + "<br />" + "<b>Reference Community</b>: " + d.reference_comm + "<br />" + "<b>Citations</b>: " + d.citations.toString();
-    })
-    .on("mouseout", function(){
-      document.getElementById('selectedRect').innerHTML = "<b>Citations</b>: None";
+    // Create rows for the matrix
+    node_list.forEach(function (node) {
+      node.count = 0;
+      matrix[node.index] = d3.range(total_items).map(item_index => {
+        return {
+          x: item_index, // column
+          y: node.index, // row
+          z: 0
+        };
+      });
     });
+
+    // Fill matrix with data from links and count how many times each item appears
+    link_list.forEach(function (link) {
+      matrix[link.source][link.target].z += link.citations;
+      node_list[link.source].count += link.citations;
+    });
+
+    // console.log(node_list);
+    // console.log(link_list);
+    // console.log(matrix);
+
+    // Draw each row (translating the y coordinate)
+    var rows = mat_svg.selectAll(".row")
+      .data(matrix)
+      .enter().append("g")
+      .attr("class", "row")
+      .attr("transform", (d, i) => {
+        return "translate(0," + matrixScale(i) + ")";
+      });
+
+    var columns = mat_svg.selectAll(".column")
+      .data(matrix)
+      .enter().append("g")
+      .attr("class", "column")
+      .attr("transform", (d, i) => {
+        return "translate(" + matrixScale(i) + ")rotate(-90)";
+      });
+
+    var squares = rows.selectAll(".cell")
+      .data(d => d.filter(item => item.z >= 0))
+      .enter().append("rect")
+      .attr("class", "cell")
+      .attr("x", d => matrixScale(d.x))
+      .attr("width", matrixScale.bandwidth())
+      .attr("height", matrixScale.bandwidth())
+      .style("fill-opacity", d => opacityScale(d.z)).style("fill", d => {
+        if (is_community_matrix) {
+          return colorScale(d.z);
+        }
+        return node_list[d.x].group == node_list[d.y].group ? colorScale(node_list[d.x].group) : "grey";
+      })
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout);
+
+    rows.append("text")
+      .attr("class", "label")
+      .attr("x", -5)
+      .attr("y", matrixScale.bandwidth() / 2)
+      .attr("dy", ".32em")
+      .attr("text-anchor", "end")
+      .text((d, i) => node_list[i].name.substr(0, 20));
+    columns.append("text")
+      .attr("class", "label")
+      .attr("x", 9)
+      .attr("y", matrixScale.bandwidth() / 2)
+      .attr("dy", ".32em")
+      .attr("text-anchor", "start")
+      .text((d, i) => node_list[i].name.substr(0, 20));
+      // .attr("transform", "rotate(30)");
+
+    rows.append("line")
+      .attr("x2", width);
+    columns.append("line")
+      .attr("x1", -width);
+
+    var tooltip = d3.select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+    function mouseover(p) {
+      d3.selectAll(".row text").style('fill', (d, i) => {
+        return p.y == i ?
+          matAxisColour({ community: index_to_group[node_list[p.y].index] }) :
+          'black';
+      });
+      d3.selectAll(".column text").style('fill', (d, i) => {
+        return p.x == i ?
+          matAxisColour({ community: index_to_group[node_list[p.x].index] }) :
+          'black';
+      });
+
+      tooltip.transition().duration(200).style("opacity", .9);
+      tooltip.html(p.z)
+        .style("left", (d3.event.pageX + 5) + "px")
+        .style("top", (d3.event.pageY - 5) + "px");
+
+      document.getElementById('selectedRect').innerHTML =
+        "<b>Source</b>: " + node_list[p.y].name + "<br />" +
+        "<b>Reference</b>: " + node_list[p.x].name + "<br />" +
+        "<b>Citations</b>: " + p.z.toString();
+    }
+
+    function mouseout() {
+      document.getElementById('selectedRect').innerHTML = "<b>Citations</b>: None";
+      d3.selectAll(".row text").style('fill', 'black');
+      d3.selectAll(".column text").style('fill', 'black');
+      tooltip.transition().duration(500).style("opacity", 0);
+    }
+
+    // Precompute the orders.
+    var orders = {
+      name: d3.range(total_items).sort((a, b) => {
+        return d3.ascending(node_list[a].name, node_list[b].name);
+      }),
+      count: d3.range(total_items).sort((a, b) => {
+        return node_list[b].count - node_list[a].count;
+      }),
+      group: d3.range(total_items).sort((a, b) => {
+        return node_list[a].group - node_list[b].group;
+      })
+    };
+
+    function change_order_picker(value) {
+      if (!value) return;
+      matrixScale.domain(orders[value]);
+      var t = mat_svg.transition().duration(2000);
+
+      t.selectAll(".row")
+        .delay((d, i) => matrixScale(i) * 4)
+        .attr("transform", function (d, i) {
+          return "translate(0," + matrixScale(i) + ")";
+        })
+        .selectAll(".cell")
+        .delay(d => matrixScale(d.x) * 4)
+        .attr("x", d => matrixScale(d.x));
+
+      t.selectAll(".column")
+        .delay((d, i) => matrixScale(i) * 4)
+        .attr("transform", (d, i) => "translate(" + matrixScale(i) + ")rotate(-90)");
+    }
+
+    // The default sort order.
+    change_order_picker($('#order_picker').val());
+
+    d3.select("#order_picker").on("change", function () {
+      // console.log(this.value);
+      change_order_picker(this.value);
+    });
+  }
+
+  function plotVenureMatrix() {
+    filtered_nodes_store = nodes_store.filter(node => community_list.includes(node.community));
+    node_names = [];
+    for (x in filtered_nodes_store) {
+      node_names[x] = filtered_nodes_store[x].name;
+    }
+    filtered_links_store = links_store.filter(link => year_list.includes(link.year) && (node_names.includes(link.source) && node_names.includes(link.target)));
+     console.log(filtered_nodes_store);
+     console.log(filtered_links_store);
+
+    var node_list = [];
+    var link_list = [];
+    var name_to_index = {};
+    var index_to_group = {};
+
+    function setupNode(filtered_nodes_store, node_list, name_to_index, index_to_group) {
+      var group_num = 0;
+      var group_exist = {};
+      for (var node of filtered_nodes_store) {
+        name_to_index[node.name] = node.index;
+        index_to_group[node.index] = node.community;
+        if (!(node.community in group_exist)) {
+          group_exist[node.community] = group_num++;
+        }
+        node_list.push({
+          name: node.name,
+          index: node.index,
+          group: group_exist[node.community],
+        });
+      }
+      // console.log(group_exist);
+    }
+    function setupLinks(filtered_links_store, name_to_index, link_list) {
+      var result = filtered_links_store.map(function (row) {
+        return {
+          venure_link: row.source + '_' + row.target,
+          year: row.year,
+          citations: row.citations
+        };
+      });
+
+      var result_grouped = [];
+      result.reduce(function (res, value) {
+        if (!res[value.venure_link]) {
+          res[value.venure_link] = {
+            sourcetarget: value.venure_link,
+            citations: 0
+          };
+          result_grouped.push(res[value.venure_link]);
+        }
+        res[value.venure_link].citations += Number(value.citations);
+        return res;
+      }, {});
+
+      for (var row of result_grouped) {
+        link_list.push({
+          source: name_to_index[row.sourcetarget.split("_")[0]],
+          target: name_to_index[row.sourcetarget.split("_")[1]],
+          citations: row.citations,
+        });
+      }
+    }
+
+    setupNode(filtered_nodes_store, node_list, name_to_index, index_to_group);
+    setupLinks(filtered_links_store, name_to_index, link_list);
+
+     console.log(node_list);
+     console.log(link_list);
+    // console.log(name_to_index);
+    // console.log(index_to_group);
+
+    plotMatrix(node_list, link_list, index_to_group, false);
+  }
+
+  function plotCommunityMatrix() {
+    filtered_matrix_store = [];
+
+    function filter_matrix(filtered_matrix_store) {
+      var community_miss_year = {};
+      for (var row of matrix_store) {
+        if (community_list.includes(row.paper_community) &&
+          community_list.includes(row.reference_community)) {
+          let community_key = row.paper_community + '_' + row.reference_community;
+          if (!community_miss_year[community_key]) {
+            community_miss_year[community_key] = [];
+          }
+          if (year_list.includes(row.year)) {
+            community_miss_year[community_key].push(row.year);
+            filtered_matrix_store.push(row);
+          }
+        }
+      }
+
+      for (var [community, years] of Object.entries(community_miss_year)) {
+        if (years.length != year_list.length) {
+          for (var y of year_list) {
+            if (!years.includes(y)) {
+              filtered_matrix_store.push({
+                paper_community: community.split('_')[0],
+                reference_community: community.split('_')[1],
+                year: y,
+                citations: '0',
+              });
+            }
+          }
+        }
+      }
+
+      filtered_matrix_store.sort(function (a, b) {
+        if (a.paper_community === b.paper_community) {
+          if (a.reference_community === b.reference_community) {
+            return a.year < b.year ? -1 : 1;
+          }
+          return a.reference_community < b.reference_community ? -1 : 1;
+        }
+        return a.paper_community < b.paper_community ? -1 : 1;
+      });
+    }
+
+    filter_matrix(filtered_matrix_store);
+    community_list.sort();
+    // console.log(filtered_matrix_store);
+    // console.log(community_list);
+
+    var node_list = [];
+    var link_list = [];
+    var name_to_index = {};
+    var index_to_group = {};
+
+    function setupNode(community_list, node_list, name_to_index, index_to_group) {
+      var index = 0;
+      var group = 0;
+      for (var name of community_list) {
+        name_to_index[name] = index;
+        index_to_group[index] = name;
+        node_list.push({
+          name: name,
+          index: index,
+          group: index,
+        });
+        index++;
+      }
+    }
+
+    function setupLinks(filtered_matrix_store, name_to_index, link_list) {
+      var result = filtered_matrix_store.map(function (row) {
+        return {
+          community_link: row.paper_community + '_' + row.reference_community,
+          year: row.year,
+          citations: row.citations
+        };
+      });
+
+      var result_grouped = [];
+      result.reduce(function (res, value) {
+        if (!res[value.community_link]) {
+          res[value.community_link] = {
+            sourcetarget: value.community_link,
+            citations: 0
+          };
+          result_grouped.push(res[value.community_link]);
+        }
+        res[value.community_link].citations += Number(value.citations);
+        return res;
+      }, {});
+
+      for (var row of result_grouped) {
+        link_list.push({
+          source: name_to_index[row.sourcetarget.split("_")[0]],
+          target: name_to_index[row.sourcetarget.split("_")[1]],
+          citations: row.citations,
+        });
+      }
+    }
+
+    setupNode(community_list, node_list, name_to_index, index_to_group);
+    setupLinks(filtered_matrix_store, name_to_index, link_list);
+
+    plotMatrix(node_list, link_list, index_to_group, true);
   }
 
   function plotData() {
     plotNetwork();
-    plotMatrix();
+    
+    matrix_picker = $('#matrix_picker').val();
+    if (matrix_picker == "venure") {
+      plotVenureMatrix();
+    } else {
+      plotCommunityMatrix();
+    }
+
+    d3.select("#matrix_picker").on("change", function () {
+      // console.log(this.value);
+      if (this.value == "venure") {
+        plotVenureMatrix();
+      } else {
+        plotCommunityMatrix();
+      }
+    });
   }
 
   requestData();
