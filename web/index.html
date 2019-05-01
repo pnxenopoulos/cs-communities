@@ -254,7 +254,6 @@
         <div class="tab-pane active" id="network">
           <div id="chartDiv" style="height: 80%; border: 1px solid black;">
           </div>
-          <div id="selectedNode" style="word-break: break-all">Selection: None</div>
         </div>
         <div class="tab-pane" id="matrix">
           <div id="matrixDiv" style="height: 80%; border: 1px solid black;">
@@ -581,7 +580,7 @@
       }
 
       function edgeOpacity(d) {
-          return d.citations / maxval * 2;
+          return d.citations / maxval * 3;
       }
 
       var label = node.append("text")
