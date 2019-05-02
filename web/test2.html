@@ -788,6 +788,8 @@
     var grid = data2grid.grid(splitCOM);
     var rows = d3.max(grid, function(d){ return d.row; });
 
+    console.log(grid);
+
     var margin = {top: 100, bottom: 100, left: 100, right: 100};
     var width = $("#chartDiv").width() * 0.75;
     var height = $(window).height() * 0.75;
