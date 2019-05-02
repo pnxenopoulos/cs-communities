@@ -388,7 +388,6 @@
       // filter nodes
       filtered_nodes_store = nodes_store.filter(node => community_list.includes(node.community));
 
-      console.log(filtered_links_store);
       node_names = [];
       for (x in filtered_nodes_store) {
           node_names[x] = filtered_nodes_store[x].name;
