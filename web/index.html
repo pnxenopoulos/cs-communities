@@ -87,7 +87,7 @@
           <optgroup label="Machine Learning">
             <option value="ai" data-content="<img src='icons/ai.png' height='24px' width='24px'> Artificial Intelligence">Artificial Intelligence</option>
             <option value="computational linguistics" data-content="<img src='icons/linguistics.png' height='24px' width='24px'> Computational Linguistics">Computational Linguistics</option>
-            <option value="computer vision" data-content="<img src='icons/computer_vision.png' height='24px' width='24px'> Computer Vision and Pattern Recognition">Computer Vision and Pattern Recognition</option>
+            <option value="vision" data-content="<img src='icons/computer_vision.png' height='24px' width='24px'> Computer Vision and Pattern Recognition">Computer Vision and Pattern Recognition</option>
             <option value="data mining" data-content="<img src='icons/data_mining.png' height='24px' width='24px'> Data Mining and Analysis">Data Mining and Analysis</option>
           </optgroup>
           <optgroup label="Systems and Networks">
@@ -388,11 +388,6 @@
       // filter nodes
       filtered_nodes_store = nodes_store.filter(node => community_list.includes(node.community));
 
-      console.log("---- debug ----");
-      console.log(nodes_store);
-      console.log(filtered_nodes_store);
-      console.log("---- debug ----");
-
       node_names = [];
       for (x in filtered_nodes_store) {
           node_names[x] = filtered_nodes_store[x].name;
@@ -547,7 +542,7 @@
               return "#8b0000";
           } else if (d.community == "computational linguistics") {
               return "#bf554b";
-          } else if (d.community == "computer vision") {
+          } else if (d.community == "vision") {
               return "#e69b94";
           } else if (d.community == "data mining") {
               return "#ffe4e1";
@@ -585,7 +580,7 @@
       }
 
       function edgeOpacity(d) {
-          return d.citations / maxval * 2;
+          return d.citations / maxval * 3;
       }
 
       var label = node.append("text")
