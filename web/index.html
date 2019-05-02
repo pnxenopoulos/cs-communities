@@ -258,9 +258,8 @@
         <div class="tab-pane" id="matrix">
           <div id="matrixDiv" style="height: 80%; border: 1px solid black;">
           </div>
-          <div style="display:inline-block;" id="legend"></div>
-          <div style="display:inline-block; float:left" id="matrix_container"></div>
-          <div id="selectedRect" style="word-break: break-all">Citations: None</div>
+          <div id="selectedRect" style="word-break: break-all"><b>Source Venue</b>: None <br /> <b>Reference Venue</b>: None <br /> <b>Citations</b>: 0</div>
+          <div id="matrix_container"></div>
         </div>
       </div>
     </div>
@@ -312,11 +311,29 @@
 
   <!-- Read in the data -->
   <script>
+    citations_store = [];
     links_store = [];
     nodes_store = [];
     matrix_store = [];
 
     function requestData() {
+      // citations data
+        d3.csv('data/citations.csv')
+            .then((d) => {
+                count = 0;
+                d.forEach((row) => {
+                    citations_store[count] = {
+                        "paper_venue": row.paper_venue,
+                        "reference_venue": row.reference_venue,
+                        "paper_community": row.paper_community,
+                        "reference_community": row.reference_community,
+                        "year": row.year,
+                        "citations": row.citations
+                    };
+                    count++;
+                });
+                console.log("columns are: " + d.columns);
+            });
       // edges of graph
         d3.csv('data/graph_data.csv')
             .then((d) => {
@@ -365,6 +382,76 @@
 
   <!-- Network visualization -->
   <script>
+  function prepareNetworkData(granularity) {
+    if (granularity == "venue_level") {
+      var result = filtered_links_store.map(function(link) {
+          return {
+              sourcetarget: link.source + '_' + link.target,
+              year: link.year,
+              citations: link.citations
+          };
+      });
+
+      var result_grouped = [];
+      result.reduce(function(res, value) {
+          if (!res[value.sourcetarget]) {
+              res[value.sourcetarget] = {
+                  sourcetarget: value.sourcetarget,
+                  citations: 0
+              };
+              result_grouped.push(res[value.sourcetarget]);
+          }
+          res[value.sourcetarget].citations += Number(value.citations);
+          return res;
+      }, {});
+
+      var splitST = result_grouped.map(function(link) {
+          return {
+              source: link.sourcetarget.split("_")[0],
+              target: link.sourcetarget.split("_")[1],
+              citations: link.citations.toString()
+          }
+      });
+
+      return splitST
+    } else {
+      var result = filtered_links_store.map(function(link) {
+          return {
+              sourcetarget: link.source + '_' + link.target,
+              year: link.year,
+              citations: link.citations
+          };
+      });
+
+      var result_grouped = [];
+      result.reduce(function(res, value) {
+          if (!res[value.sourcetarget]) {
+              res[value.sourcetarget] = {
+                  sourcetarget: value.sourcetarget,
+                  citations: 0
+              };
+              result_grouped.push(res[value.sourcetarget]);
+          }
+          res[value.sourcetarget].citations += Number(value.citations);
+          return res;
+      }, {});
+
+      var splitST = result_grouped.map(function(link) {
+          return {
+              source: link.sourcetarget.split("_")[0],
+              target: link.sourcetarget.split("_")[1],
+              citations: link.citations.toString()
+          }
+      });
+    }
+  }
+
+  function prepareMatrixData(granularity) {
+    if (granularity == "venue_level") {
+      filtered_matrix_store = citations_store.filter(link => year_list.includes(link.year) && community_list.includes(link.paper_community) && community_list.includes(link.reference_community));
+    }
+  }
+
   function plotNetwork() {
       d3.select("#networkSVG").remove();
 
@@ -380,6 +467,7 @@
       // get community and year values
       community_list = $('#community_picker').val();
       year_list = $('#year_picker').val();
+      granularity = $('#data_picker').val();
 
       // create filtered stores
       filtered_nodes_store = [];
@@ -442,8 +530,10 @@
           .force("center_force", center_force)
           .force("links", link_force);
       simulation.on("tick", tickActions);
+
       var g = svg.append("g")
           .attr("class", "everything");
+
       var link = g.append("g")
           .attr("class", "links")
           .selectAll("line")
@@ -658,10 +748,11 @@
     d3.select("#matrixSVG").remove();
 
     filtered_matrix_store = [];
-    filtered_matrix_store = matrix_store.filter(row => community_list.includes(row.paper_community) && community_list.includes(row.reference_community) && year_list.includes(row.year));
+    filtered_matrix_store = citations_store.filter(link => year_list.includes(link.year) && community_list.includes(link.paper_community) && community_list.includes(link.reference_community));
 
     var result = filtered_matrix_store.map(function(row) {
       return {
+          venue_link: row.paper_venue + '_' + row.reference_venue,
           community_link: row.paper_community + '_' + row.reference_community,
           year: row.year,
           citations: row.citations
@@ -670,21 +761,24 @@
 
     var result_grouped = [];
     result.reduce(function(res, value) {
-        if (!res[value.community_link]) {
-            res[value.community_link] = {
-                sourcetarget: value.community_link,
+        if (!res[value.venue_link]) {
+            res[value.venue_link] = {
+                sourcetarget: value.venue_link,
+                communities: value.community_link,
                 citations: 0
             };
-            result_grouped.push(res[value.community_link]);
+            result_grouped.push(res[value.venue_link]);
         }
-        res[value.community_link].citations += Number(value.citations);
+        res[value.venue_link].citations += Number(value.citations);
         return res;
     }, {});
 
     var splitCOM = result_grouped.map(function(row) {
         return {
-            paper_comm: row.sourcetarget.split("_")[0],
-            reference_comm: row.sourcetarget.split("_")[1],
+            paper_venue: row.sourcetarget.split("_")[0],
+            reference_venue: row.sourcetarget.split("_")[1],
+            paper_community: row.communities.split("_")[0],
+            reference_community: row.communities.split("_")[1],
             citations: row.citations.toString()
         }
     });
@@ -695,9 +789,8 @@
     var rows = d3.max(grid, function(d){ return d.row; });
 
     var margin = {top: 100, bottom: 100, left: 100, right: 100};
-    var width = 500;
-    var height = 500;
-    var padding = .1;
+    var width = $("#chartDiv").width();
+    var height = $(window).height() * 0.8;
 
     var mat_svg = d3.select("#matrix_container").append("svg")
       .attr("id", "matrixSVG")
@@ -708,35 +801,24 @@
 
     var x = d3.scaleBand()
       .range([0, width])
-      .paddingInner(padding)
       .domain(d3.range(1, rows + 1));
 
     var y = d3.scaleBand()
       .range([0, height])
-      .paddingInner(padding)
       .domain(d3.range(1, rows + 1));
 
-    var c = chroma.scale(["white", "grey"])
-      .domain([0, 10000]);
+    var maxval = Math.max.apply(Math, splitCOM.map(function(o) { return o.citations; }));
 
-    var x_axis = d3.axisTop(y).tickFormat(function(d, i){ return community_list[i]; });
-    var y_axis = d3.axisLeft(x).tickFormat(function(d, i){ return community_list[i]; });
-
-    mat_svg.append("g")
-      .attr("class", "x axis")
-      .call(x_axis);
-
-    mat_svg.append("g")
-      .attr("class", "y axis")
-      .call(y_axis);
+    var c = chroma.scale(["white", "black"])
+      .domain([0, maxval]);
 
     mat_svg.selectAll("rect")
-        .data(grid, function(d){ return d.paper_comm + d.reference_comm; })
+        .data(grid, function(d){ return d.paper_venue + d.reference_venue; })
         .enter().append("rect")
         .attr("x", function(d){ return x(d.column); })
         .attr("y", function(d){ return y(d.row); })
-        .attr("width", x.bandwidth())
-        .attr("height", y.bandwidth())
+        .attr("width", x.bandwidth() / 2)
+        .attr("height", y.bandwidth() / 2)
         .style("fill", function(d){ return c(d.citations); })
         .style("opacity", 1e-6)
         .transition()
@@ -746,10 +828,10 @@
 
   d3.selectAll("rect")
     .on("mouseover", function(d){
-      document.getElementById('selectedRect').innerHTML =  "<b>Source Community</b>: " + d.paper_comm + "<br />" + "<b>Reference Community</b>: " + d.reference_comm + "<br />" + "<b>Citations</b>: " + d.citations.toString();
+      document.getElementById('selectedRect').innerHTML =  "<b>Source Venue</b>: " + d.paper_venue + " (" + d.paper_community + ")" + "<br />" + "<b>Reference Venue</b>: " + d.reference_venue + " (" + d.reference_community + ")" + "<br />" + "<b>Citations</b>: " + d.citations.toString();
     })
     .on("mouseout", function(){
-      document.getElementById('selectedRect').innerHTML = "<b>Citations</b>: None";
+      document.getElementById('selectedRect').innerHTML =  "<b>Source Venue</b>: " + "None" + "<br />" + "<b>Reference Venue</b>: " + "None" + "<br />" + "<b>Citations</b>: " + "0";
     });
   }
 
