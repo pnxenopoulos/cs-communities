@@ -254,7 +254,6 @@
         <div class="tab-pane active" id="network">
           <div id="chartDiv" style="height: 80%; border: 1px solid black;">
           </div>
-          <div id="selectedNode" style="word-break: break-all">Selection: None</div>
         </div>
         <div class="tab-pane" id="matrix">
           <div id="matrixDiv" style="height: 80%; border: 1px solid black;">
@@ -339,7 +338,7 @@
                 count = 0;
                 d.forEach((row) => {
                     nodes_store[count] = {
-                        "name": row.venue,
+                        "name": row.name,
                         "community": row.community
                     };
                     count++;
@@ -388,6 +387,11 @@
 
       // filter nodes
       filtered_nodes_store = nodes_store.filter(node => community_list.includes(node.community));
+
+      console.log("---- debug ----");
+      console.log(nodes_store);
+      console.log(filtered_nodes_store);
+      console.log("---- debug ----");
 
       node_names = [];
       for (x in filtered_nodes_store) {
