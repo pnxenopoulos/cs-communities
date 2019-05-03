@@ -820,10 +820,52 @@
         .attr("y", function(d){ return y(d.row); })
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function(d){ return c(d.citations); })
+        .style("fill", matColour)
         .style("opacity", 1);
 
   mat_svg.selectAll("rect")
+
+  function matColour(d) {
+      if (d.paper_community == "ai") {
+          return "#8b0000";
+      } else if (d.paper_community == "computational linguistics") {
+          return "#bf554b";
+      } else if (d.paper_community == "vision") {
+          return "#e69b94";
+      } else if (d.paper_community == "data mining") {
+          return "#ffe4e1";
+      } else if (d.paper_community == "databases") {
+          return "#00008b";
+      } else if (d.paper_community == "systems") {
+          return "#354ebf";
+      } else if (d.paper_community == "software systems") {
+          return "#6892e3";
+      } else if (d.paper_community == "networks") {
+          return "#add8e6";
+      } else if (d.paper_community == "security") {
+          return "#006400";
+      } else if (d.paper_community == "signal processing") {
+          return "#309129";
+      } else if (d.paper_community == "information theory") {
+          return "#60be5a";
+      } else if (d.paper_community == "theory") {
+          return "#90ee90";
+      } else if (d.paper_community == "hci") {
+          return "#8b008b";
+      } else if (d.paper_community == "multimedia") {
+          return "#b14fa0";
+      } else if (d.paper_community == "graphics") {
+          return "#d783b3";
+      } else if (d.paper_community == "robotics") {
+          return "#ffb6c1";
+      } else if (d.paper_community == "medical informatics") {
+          return "#b8860b";
+      } else if (d.paper_community == "bioinformatics") {
+          return "#ffd700";
+      } else {
+          return "black";
+      }
+  }
 
   d3.selectAll("rect")
     .on("mouseover", function(d){
