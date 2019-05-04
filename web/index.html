@@ -757,8 +757,6 @@
         paper_comm.push({paper_venue: item.paper_venue, paper_community: item.paper_community});
       }
     });
-    console.log("-----------------");
-    console.log(paper_comm);
 
     result_matrix = [];
     for (i=0; i < paper_comm.length; i++) {
@@ -770,12 +768,8 @@
           reference_community: paper_comm[i].paper_community,
           citations: 0
         };
-        console.log("wrote");
       }
     }
-
-    console.log("-----------------");
-    console.log(result_matrix);
 
     var result_mat = filtered_matrix_store.map(function(row) {
       return {
@@ -806,13 +800,11 @@
             reference_venue: row.sourcetarget.split("_")[1],
             paper_community: row.communities.split("_")[0],
             reference_community: row.communities.split("_")[1],
-            citations: row.citations.toString()
+            citations: row.citations.toString(),
+            row: 1,
+            column: 1
         }
     });
-
-    console.log("-----");
-    console.log(splitCOM_mat);
-    console.log("-----");
 
     for (i=0; i < paper_comm.length; i++) {
       for (j=0; j < paper_comm.length; j++) {
@@ -821,9 +813,34 @@
         filtered_rows = splitCOM_mat.filter(row => row.paper_venue == current_paper_venue && row.reference_venue == current_reference_venue);
         if (filtered_rows.length > 0) {
           result_matrix[(i*paper_comm.length)+j].citations = filtered_rows[0].citations
+          if (i == j) {
+            result_matrix[(i*paper_comm.length)+j].citations = 0
+          }
         }
       }
     }
+
+    unique_communities = [...new Set(result_matrix.map(item => item.paper_community))];
+    sorted_venue_names = [];
+    for(i = 0; i < unique_communities.length; i++) {
+      current_community = unique_communities[i];
+      subset = result_matrix.filter(item => item.paper_community == current_community);
+      venue_names = [...new Set(subset.map(item => item.paper_venue))];
+      sorted_venue_names[i] = venue_names.sort();
+    }
+    console.log(unique_communities);
+    console.log(sorted_venue_names);
+    for(i = 0; i < sorted_venue_names.length; i++) {
+      venues = sorted_venue_names[i];
+      for(j = 0; i < venues.length; j++) {
+        current_venue = venues[j];
+        for(k = 0; k < xxx; k++) {
+          
+        }
+
+      }
+    }
+    //result_matrix = result_matrix.sort((a, b) => (a.paper_community > b.paper_community) ? 1 : (a.paper_community === b.paper_community) ? ((a.paper_venue < b.paper_venue) ? 1 : -1) : -1 )
 
     console.log(result_matrix);
 
@@ -848,7 +865,7 @@
       .range([0, height])
       .domain(d3.range(1, rows + 1));
 
-    var maxval = Math.max.apply(Math, splitCOM_mat.map(function(o) { return o.citations; }));
+    var maxval = Math.max.apply(Math, result_matrix.map(function(o) { return o.citations; }));
 
     var c = chroma.scale(["white", "black"])
       .domain([0, maxval]);
