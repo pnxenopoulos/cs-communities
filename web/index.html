@@ -828,23 +828,32 @@
       venue_names = [...new Set(subset.map(item => item.paper_venue))];
       sorted_venue_names[i] = venue_names.sort();
     }
-    console.log(unique_communities);
-    console.log(sorted_venue_names);
-    for(i = 0; i < sorted_venue_names.length; i++) {
-      venues = sorted_venue_names[i];
-      for(j = 0; i < venues.length; j++) {
-        current_venue = venues[j];
-        for(k = 0; k < xxx; k++) {
-          
-        }
 
+    var merged_venue_names = [].concat.apply([], sorted_venue_names);
+    console.log(merged_venue_names);
+    var final_results_matrix = [];
+
+    for(i = 0; i < merged_venue_names.length; i++) {
+      row_venue = merged_venue_names[i];
+      for(j = 0; j < merged_venue_names.length; j++) {
+        col_venue = merged_venue_names[j];
+        filtered_item = result_matrix.filter(item => item.paper_venue == row_venue && item.reference_venue == col_venue);
+        final_results_matrix[(i*merged_venue_names.length) + j] = {
+          paper_venue: row_venue,
+          reference_venue: col_venue,
+          paper_community: filtered_item[0].paper_community,
+          reference_community: filtered_item[0].reference_community,
+          citations: filtered_item[0].citations,
+          row: i,
+          column: j
+        }
       }
     }
-    //result_matrix = result_matrix.sort((a, b) => (a.paper_community > b.paper_community) ? 1 : (a.paper_community === b.paper_community) ? ((a.paper_venue < b.paper_venue) ? 1 : -1) : -1 )
+    console.log("------");
+    console.log(final_results_matrix);
+    console.log("------");
 
-    console.log(result_matrix);
-
-    var grid = data2grid.grid(result_matrix);
+    var grid = data2grid.grid(final_results_matrix);
     var rows = d3.max(grid, function(d){ return d.row; });
 
     var width = $("#chartDiv").width() * 0.8;
