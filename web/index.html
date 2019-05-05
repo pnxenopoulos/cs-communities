@@ -863,8 +863,7 @@
       .attr("id", "matrixSVG")
       .attr("width", width)
       .attr("height", height)
-      .attr("border", "1px")
-      .append("g");
+      .attr("border", "1px");
 
     var x = d3.scaleBand()
       .range([0, width])
@@ -887,7 +886,10 @@
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
         .style("fill", function(d) { return c(d.citations);})
-        .style("opacity", 1);
+        .style("opacity", 1)
+        .on("mouseover", function(d) {
+
+        });
 
   mat_svg.selectAll("rect")
 
