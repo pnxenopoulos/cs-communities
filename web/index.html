@@ -852,8 +852,8 @@
     var grid = data2grid.grid(final_results_matrix);
     var rows = d3.max(grid, function(d){ return d.row; });
 
-    var width = 750 //$("#chartDiv").width() * 0.8;
-    var height =  750 // width; //$(window).height() * 0.8;
+    var width = 1250 //$("#chartDiv").width() * 0.8;
+    var height =  1250 // width; //$(window).height() * 0.8;
 
     var mat_svg = d3.select("#matrixDiv").append("svg")
       .attr("id", "matrixSVG")
@@ -871,7 +871,7 @@
 
     var maxval = Math.max.apply(Math, result_matrix.map(function(o) { return o.citations; }));
 
-    var c = chroma.scale(["white", "black"])
+    var c = chroma.scale(["#fdfdfd", "black"])
       .domain([0, maxval]);
 
     var mat_cells = mat_svg.selectAll("rect")
