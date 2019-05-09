@@ -874,17 +874,15 @@
     var c = chroma.scale(["white", "black"])
       .domain([0, maxval]);
 
-    mat_svg.selectAll("rect")
+    var mat_cells = mat_svg.selectAll("rect")
         .data(grid, function(d){ return d.paper_venue + d.reference_venue; })
-        .enter().append("rect")
+        .enter().append("rect").attr("class", "matrix_cell")
         .attr("x", function(d){ return x(d.column); })
         .attr("y", function(d){ return y(d.row); })
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
         .style("fill", function(d) { return c(d.citations);})
         .style("opacity", 1);
-
-  mat_svg.selectAll("rect")
 
   function matColour(d) {
       if (d.paper_community == "ai") {
