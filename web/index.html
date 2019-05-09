@@ -514,7 +514,6 @@
       });
 
       var maxval = Math.max.apply(Math, splitST.map(function(o) { return o.citations; }));
-      console.log(maxval);
 
       // create network graph
       var radius = 25;
@@ -764,7 +763,7 @@
           paper_venue: paper_comm[i].paper_venue,
           reference_venue: paper_comm[j].paper_venue,
           paper_community: paper_comm[i].paper_community,
-          reference_community: paper_comm[i].paper_community,
+          reference_community: paper_comm[j].paper_community,
           citations: 0
         };
       }
@@ -787,11 +786,13 @@
                 communities: value.community_link,
                 citations: 0
             };
-            result_grouped_mat.push(res[value.venue_link]);
         }
         res[value.venue_link].citations += Number(value.citations);
+        result_grouped_mat.push(res[value.venue_link]);
         return res;
     }, {});
+
+
 
     var splitCOM_mat = result_grouped_mat.map(function(row) {
         return {
@@ -851,8 +852,8 @@
     var grid = data2grid.grid(final_results_matrix);
     var rows = d3.max(grid, function(d){ return d.row; });
 
-    var width = 500 //$("#chartDiv").width() * 0.8;
-    var height =  500 // width; //$(window).height() * 0.8;
+    var width = 750 //$("#chartDiv").width() * 0.8;
+    var height =  750 // width; //$(window).height() * 0.8;
 
     var mat_svg = d3.select("#matrixDiv").append("svg")
       .attr("id", "matrixSVG")
@@ -872,10 +873,6 @@
 
     var c = chroma.scale(["white", "black"])
       .domain([0, maxval]);
-
-      console.log("------");
-      console.log(grid);
-      console.log("------");
 
     mat_svg.selectAll("rect")
         .data(grid, function(d){ return d.paper_venue + d.reference_venue; })
