@@ -256,9 +256,9 @@
           </div>
         </div>
         <div class="tab-pane" id="matrix">
-          <div id="matrixDiv" style="height: 80%; border: 1px solid black;">
+          <div id="matrixDiv" style="height: 80%;">
           </div>
-          <div id="matrix_container"></div>
+
         </div>
       </div>
     </div>
@@ -851,10 +851,10 @@
     var grid = data2grid.grid(final_results_matrix);
     var rows = d3.max(grid, function(d){ return d.row; });
 
-    var width = $("#chartDiv").width() * 0.8;
-    var height =  width; //$(window).height() * 0.8;
+    var width = 500 //$("#chartDiv").width() * 0.8;
+    var height =  500 // width; //$(window).height() * 0.8;
 
-    var mat_svg = d3.select("#matrix_container").append("svg")
+    var mat_svg = d3.select("#matrixDiv").append("svg")
       .attr("id", "matrixSVG")
       .attr("width", width)
       .attr("height", height)
