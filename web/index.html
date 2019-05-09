@@ -258,7 +258,6 @@
         <div class="tab-pane" id="matrix">
           <div id="matrixDiv" style="height: 80%; border: 1px solid black;">
           </div>
-          <div id="selectedRect" style="word-break: break-all"><b>Source Venue</b>: None <br /> <b>Reference Venue</b>: None <br /> <b>Citations</b>: 0</div>
           <div id="matrix_container"></div>
         </div>
       </div>
@@ -830,7 +829,6 @@
     }
 
     var merged_venue_names = [].concat.apply([], sorted_venue_names);
-    console.log(merged_venue_names);
     var final_results_matrix = [];
 
     for(i = 0; i < merged_venue_names.length; i++) {
@@ -849,15 +847,12 @@
         }
       }
     }
-    console.log("------");
-    console.log(final_results_matrix);
-    console.log("------");
 
     var grid = data2grid.grid(final_results_matrix);
     var rows = d3.max(grid, function(d){ return d.row; });
 
     var width = $("#chartDiv").width() * 0.8;
-    var height = $(window).height() * 0.8;
+    var height =  width; //$(window).height() * 0.8;
 
     var mat_svg = d3.select("#matrix_container").append("svg")
       .attr("id", "matrixSVG")
@@ -878,6 +873,10 @@
     var c = chroma.scale(["white", "black"])
       .domain([0, maxval]);
 
+      console.log("------");
+      console.log(grid);
+      console.log("------");
+
     mat_svg.selectAll("rect")
         .data(grid, function(d){ return d.paper_venue + d.reference_venue; })
         .enter().append("rect")
@@ -886,10 +885,7 @@
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
         .style("fill", function(d) { return c(d.citations);})
-        .style("opacity", 1)
-        .on("mouseover", function(d) {
-
-        });
+        .style("opacity", 1);
 
   mat_svg.selectAll("rect")
 
@@ -937,10 +933,20 @@
 
   d3.selectAll("rect")
     .on("mouseover", function(d){
-      document.getElementById('selectedRect').innerHTML =  "<b>Source Venue</b>: " + d.paper_venue + " (" + d.paper_community + ")" + "<br />" + "<b>Reference Venue</b>: " + d.reference_venue + " (" + d.reference_community + ")" + "<br />" + "<b>Citations</b>: " + d.citations.toString();
+      div.transition()
+           .duration(300)
+           .style("opacity", 1);
+
+      div.html("<b>Source Venue</b>: " + d.paper_venue + " (" + d.paper_community + ")" + "<br />" +
+      "<b>Reference Venue</b>: " + d.reference_venue + " (" + d.reference_community + ")" + "<br />" +
+      "<b>Citations</b>: " + d.citations)
+         .style("left", (d3.event.pageX ) + "px")
+         .style("top", (d3.event.pageY) + "px");
     })
     .on("mouseout", function(){
-      document.getElementById('selectedRect').innerHTML =  "<b>Source Venue</b>: " + "None" + "<br />" + "<b>Reference Venue</b>: " + "None" + "<br />" + "<b>Citations</b>: " + "0";
+      div.transition()
+         .duration(300)
+         .style("opacity", 1e-6);
     });
   }
 
