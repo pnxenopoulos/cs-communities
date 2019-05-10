@@ -555,23 +555,29 @@
           .on("mousemove", function(d){mousemove_node(d);})
           .on("mouseout", mouseout_node);
 
-      console.log("----- fls");
-      console.log(filtered_links_store);
-      console.log("-----");
+      var linkedByIndex = {};
+      splitST.forEach(function(d) {
+        linkedByIndex[d.source.name + "," + d.target.name] = 1;
+      });
 
-      console.log("----- fns");
-      console.log(filtered_nodes_store);
-      console.log("-----");
+      function neighboring(a, b) {
+        var one = linkedByIndex[a.name + "," + b.name] == 1;
+        var two = linkedByIndex[b.name + "," + a.name] == 1;
+        if ( (one == 1) || (two == 1) ) {
+          return true
+        } else {
+          return false
+        }
+      }
+
 
       function mouseover_node(d) {
         div.transition()
            .duration(300)
            .style("opacity", 1);
 
-
-
         node.style("opacity", function(l) {
-            if (d.name == l.name) {
+            if ( (d.name == l.name) || (neighboring(d, l)) ) {
               return 1;
             } else {
               return 0.20;
@@ -592,8 +598,6 @@
             return "gray";
           }
         });
-
-
       }
 
       function mousemove_node(d) {
