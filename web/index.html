@@ -79,11 +79,7 @@
 
     <div class="row">
       <div class="col-4" id="optionDiv">
-        <select class="col-3 selectpicker" data-actions-box="true" id="data_picker" title="Choose data granularity" onChange=changeDataType()>
-          <option value="community_level">Community</option>
-          <option value="venue_level">Venue</option>
-        </select>
-        <select class="col-3 selectpicker" multiple data-actions-box="true" id="community_picker" title="Choose communities" onChange=changeCommunity()>
+        <select class="col-4 selectpicker" multiple data-actions-box="true" id="community_picker" title="Choose communities" onChange=changeCommunity()>
           <optgroup label="Machine Learning">
             <option value="ai" data-content="<img src='icons/ai.png' height='24px' width='24px'> Artificial Intelligence">Artificial Intelligence</option>
             <option value="computational linguistics" data-content="<img src='icons/linguistics.png' height='24px' width='24px'> Computational Linguistics">Computational Linguistics</option>
@@ -113,7 +109,7 @@
             <option value="medical informatics" data-content="<img src='icons/medical.png' height='24px' width='24px'> Medical Informatics">Medical Informatics</option>
           </optgroup>
         </select>
-        <select class="col-3 selectpicker" multiple data-actions-box="true" id="year_picker" title="Choose years" onChange=changeYears()>
+        <select class="col-4 selectpicker" multiple data-actions-box="true" id="year_picker" title="Choose years" onChange=changeYears()>
           <optgroup label="2010s">
             <option value="2017">2017</option>
             <option value="2016">2016</option>
@@ -149,7 +145,11 @@
             <option value="1990">1990</option>
           </optgroup>
         </select>
+        <br />
+        <br />
         <input type="number" class="col-4 form-control" id="citations_minimum" aria-describedby="min_citations" placeholder="Minimum number of citations">
+        <br />
+        <br />
         <button type="button" class="btn btn-outline-primary" onclick=plotData()>Submit</button>
 
         <br>
