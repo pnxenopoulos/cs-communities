@@ -555,14 +555,20 @@
           .on("mousemove", function(d){mousemove_node(d);})
           .on("mouseout", mouseout_node);
 
+      console.log("----- fls");
+      console.log(filtered_links_store);
+      console.log("-----");
+
+      console.log("----- fns");
+      console.log(filtered_nodes_store);
+      console.log("-----");
 
       function mouseover_node(d) {
         div.transition()
            .duration(300)
            .style("opacity", 1);
 
-        //d3.selectAll("circle").style("opacity", .20);
-        //d3.selectAll(".links").style("stroke", "gray").style("opacity", .05);
+
 
         node.style("opacity", function(l) {
             if (d.name == l.name) {
@@ -570,6 +576,7 @@
             } else {
               return 0.20;
             }
+
         });
 
         link.style("opacity", function(l) {
@@ -585,6 +592,8 @@
             return "gray";
           }
         });
+
+
       }
 
       function mousemove_node(d) {
@@ -884,7 +893,7 @@
         .style("fill", function(d) { return c(d.citations);})
         .style("opacity", 1);
 
-  function matColour(d) {
+  function matColour_row(d) {
       if (d.paper_community == "ai") {
           return "#8b0000";
       } else if (d.paper_community == "computational linguistics") {
@@ -925,6 +934,47 @@
           return "black";
       }
   }
+  function matColour_col(d) {
+      if (d.reference_community == "ai") {
+          return "#8b0000";
+      } else if (d.reference_community == "computational linguistics") {
+          return "#bf554b";
+      } else if (d.reference_community == "vision") {
+          return "#e69b94";
+      } else if (d.reference_community == "data mining") {
+          return "#ffe4e1";
+      } else if (d.reference_community == "databases") {
+          return "#00008b";
+      } else if (d.reference_community == "systems") {
+          return "#354ebf";
+      } else if (d.reference_community == "software systems") {
+          return "#6892e3";
+      } else if (d.reference_community == "networks") {
+          return "#add8e6";
+      } else if (d.reference_community == "security") {
+          return "#006400";
+      } else if (d.reference_community == "signal processing") {
+          return "#309129";
+      } else if (d.reference_community == "information theory") {
+          return "#60be5a";
+      } else if (d.reference_community == "theory") {
+          return "#90ee90";
+      } else if (d.reference_community == "hci") {
+          return "#8b008b";
+      } else if (d.reference_community == "multimedia") {
+          return "#b14fa0";
+      } else if (d.reference_community == "graphics") {
+          return "#d783b3";
+      } else if (d.reference_community == "robotics") {
+          return "#ffb6c1";
+      } else if (d.reference_community == "medical informatics") {
+          return "#b8860b";
+      } else if (d.reference_community == "bioinformatics") {
+          return "#ffd700";
+      } else {
+          return "black";
+      }
+  }
 
   d3.selectAll("rect")
     .on("mouseover", function(d){
@@ -937,11 +987,25 @@
       "<b>Citations</b>: " + d.citations)
          .style("left", (d3.event.pageX ) + "px")
          .style("top", (d3.event.pageY) + "px");
+
+      d3.selectAll(".matrix_cell")
+        .style("fill", function(r) {
+          if (r.row == d.row) {
+            return matColour_row(d);
+          } else if (r.column == d.column) {
+            return matColour_col(d);
+          } else {
+            return c(r.citations);
+          }
+        });
+
     })
     .on("mouseout", function(){
       div.transition()
          .duration(300)
          .style("opacity", 1e-6);
+
+
     });
   }
 
